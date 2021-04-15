@@ -1,6 +1,10 @@
-#####Define Functions#####
+#####Import Libraries#####
 
 import pandas as pd
+import geopy
+
+
+#####Define Functions#####
 
 def import_data(file_location):
     '''Import the data and append to one dataframe'''
@@ -11,7 +15,8 @@ def import_data(file_location):
             data = data.rename(columns = {'Report Date':keep_cols[0], 'UCR Literal':keep_cols[1], 'Neighborhood':keep_cols[2], 'Latitude':keep_cols[3], 'Longitude':keep_cols[4]})
         data = data[keep_cols]
         df = df.append(data, ignore_index = True)
-    return df		
+    return df
+    		
 
 #####Define objects#####
 
