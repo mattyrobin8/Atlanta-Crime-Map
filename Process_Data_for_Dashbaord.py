@@ -16,7 +16,12 @@ def import_data(file_location):
         data = data[keep_cols]
         df = df.append(data, ignore_index = True)
     return df
-    		
+
+def get_zipcode(df, geolocator, lat_field, lon_field):
+    '''Take Latitude and Longitude and find the Zip Codes'''
+    location = geolocator.reverse((df[lat_field], df[lon_field]))
+    return location.raw['address']['postcode']
+
 
 #####Define objects#####
 
@@ -30,11 +35,14 @@ file_list = [file1, file2, file3, file4]
 #Which columns to keep
 keep_cols = ['rpt_date','UC2_Literal','neighborhood','lat','long']
 
+#Establish Connection to geopy mechanism
+geolocator = geopy.Nominatim(user_agent='name_of_your_app')
 
 #####Run functions#####
 
 crime_df = import_data(file_list)
-
+zipcodes = crime_df.apply(get_zipcode, axis=1, geolocator=geolocator, lat_field='lat', lon_field='long')
+print(zipcodes)
 
 #def main():
     #Import Data
