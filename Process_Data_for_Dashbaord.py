@@ -28,10 +28,11 @@ keep_cols = ['rpt_date','UC2_Literal','neighborhood','lat','long']
 
 #####Run functions#####
 
-def main():
-    #Import Data
-    crime_df = import_data(file_list)
-    print(crime_df)
+crime_df = import_data(file_list)
 
-if __name__ == '__main__':
-    main()
+
+#def main():
+    #Import Data
+
+#if __name__ == '__main__':
+#    main()
