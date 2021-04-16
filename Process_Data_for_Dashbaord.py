@@ -1,8 +1,9 @@
-#####Import Libraries#####
+######################
+###Import Libraries###
+######################
 
 import pandas as pd
 import geopy
-
 
 #####Define Functions#####
 
@@ -23,7 +24,9 @@ def get_zipcode(df, geolocator, lat_field, lon_field):
     return location.raw['address']['postcode']
 
 
-#####Define objects#####
+######################
+####Define objects####
+######################
 
 #list files
 file1 = r"C:\Users\matty\OneDrive\Politics\Mayor Felicia\Data\COBRA-2021.csv"
@@ -36,16 +39,22 @@ file_list = [file1, file2, file3, file4]
 keep_cols = ['rpt_date','UC2_Literal','neighborhood','lat','long']
 
 #Establish Connection to geopy mechanism
-geolocator = geopy.Nominatim(user_agent='name_of_your_app')
+geolocator = geopy.Nominatim(user_agent='bob')
 
-#####Run functions#####
 
+#####################
+####Run functions####
+#####################
+
+#Import Data
 crime_df = import_data(file_list)
-zipcodes = crime_df.apply(get_zipcode, axis=1, geolocator=geolocator, lat_field='lat', lon_field='long')
-print(zipcodes)
+print(crime_df[:10])
+#zipcodes = crime_df.apply(get_zipcode, axis=1, geolocator=geolocator, lat_field='lat', lon_field='long')
+#print(zipcodes)
 
 #def main():
     #Import Data
+    #crime_df = import_data(file_list)
 
 #if __name__ == '__main__':
 #    main()
