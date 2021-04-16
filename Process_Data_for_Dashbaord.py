@@ -22,7 +22,7 @@ def import_data(file_location):
     return df
 
 def get_geodata(df, geolocator, lat_field, lon_field):
-    '''Take Latitude and Longitude and find the Zip Codes'''
+    '''Use Latitude and Longitude to find the Zip Codes'''
     location = geolocator.reverse((df[lat_field], df[lon_field]))
     return location.raw
 
@@ -54,7 +54,10 @@ crime_df = import_data(file_list)
 
 #Retrieve GeoData
 geodata = crime_df[:10].apply(get_geodata, axis=1, geolocator=geolocator, lat_field='lat', lon_field='long')
-print(geodata)
+
+#Extract zip codes and matching information from geodata
+for index, value in geodata.items():
+        print(f"Index : {index}, latitude : {value['lat']}, longitude : {value['lon']}, house number : {value['address']['house_number']}, road : {value['address']['road']}")
 
 #def main():
     #Import Data
