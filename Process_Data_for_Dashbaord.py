@@ -5,7 +5,10 @@
 import pandas as pd
 import geopy
 
-#####Define Functions#####
+
+######################
+###Define Functions###
+######################
 
 def import_data(file_location):
     '''Import the data and append to one dataframe'''
@@ -18,18 +21,14 @@ def import_data(file_location):
         df = df.append(data, ignore_index = True)
     return df
 
-def get_zipcode(df, geolocator, lat_field, lon_field):
+def get_geodata(df, geolocator, lat_field, lon_field):
     '''Take Latitude and Longitude and find the Zip Codes'''
     location = geolocator.reverse((df[lat_field], df[lon_field]))
-    geo_data = location.raw
-    print(geo_data['lat'])
-    print(geo_data['lon'])
-    print(geo_data['address'])
-    #return location.raw
+    return location.raw
 
 
 ######################
-####Define objects####
+####Create objects####
 ######################
 
 #list files
@@ -53,8 +52,9 @@ geolocator = geopy.Nominatim(user_agent='bob')
 #Import Data
 crime_df = import_data(file_list)
 
-#Extract Zip Codes
-zipcodes = crime_df.apply(get_zipcode, axis=1, geolocator=geolocator, lat_field='lat', lon_field='long')
+#Retrieve GeoData
+geodata = crime_df[:10].apply(get_geodata, axis=1, geolocator=geolocator, lat_field='lat', lon_field='long')
+print(geodata)
 
 #def main():
     #Import Data
