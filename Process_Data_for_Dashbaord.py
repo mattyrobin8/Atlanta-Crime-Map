@@ -21,7 +21,14 @@ def import_data(file_location):
 def get_zipcode(df, geolocator, lat_field, lon_field):
     '''Take Latitude and Longitude and find the Zip Codes'''
     location = geolocator.reverse((df[lat_field], df[lon_field]))
-    return location.raw['address']['postcode']
+    geo_data = location.raw['address']
+    #print(geo_data)
+    zip_list = []
+    for index, value in geo_data.items():
+        #zip_list.append(value['postcode'])
+        #print(value)
+        if index == ''
+        print(f"Index : {index}, Value : {value}")
 
 
 ######################
@@ -48,9 +55,9 @@ geolocator = geopy.Nominatim(user_agent='bob')
 
 #Import Data
 crime_df = import_data(file_list)
-print(crime_df[:10])
-#zipcodes = crime_df.apply(get_zipcode, axis=1, geolocator=geolocator, lat_field='lat', lon_field='long')
-#print(zipcodes)
+
+#Extract Zip Codes
+zipcodes = crime_df.apply(get_zipcode, axis=1, geolocator=geolocator, lat_field='lat', lon_field='long')
 
 #def main():
     #Import Data
