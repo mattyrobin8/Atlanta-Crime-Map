@@ -21,14 +21,11 @@ def import_data(file_location):
 def get_zipcode(df, geolocator, lat_field, lon_field):
     '''Take Latitude and Longitude and find the Zip Codes'''
     location = geolocator.reverse((df[lat_field], df[lon_field]))
-    geo_data = location.raw['address']
-    #print(geo_data)
-    zip_list = []
-    for index, value in geo_data.items():
-        #zip_list.append(value['postcode'])
-        #print(value)
-        if index == ''
-        print(f"Index : {index}, Value : {value}")
+    geo_data = location.raw
+    print(geo_data['lat'])
+    print(geo_data['lon'])
+    print(geo_data['address'])
+    #return location.raw
 
 
 ######################
