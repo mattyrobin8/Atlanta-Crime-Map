@@ -26,6 +26,13 @@ def get_geodata(df, geolocator, lat_field, lon_field):
     location = geolocator.reverse((df[lat_field], df[lon_field]))
     return location.raw
 
+def create_match_file(df):
+    match_df = pd.DataFrame(columns = match_cols)
+    for index, value in df.items():
+        temp_df = pd.DataFrame([[value['lat'], value['lon'], value['address']['house_number'], value['address']['road']]], columns = match_cols)
+        match_df = match_df.append(temp_df, ignore_index = True)
+    return match_df
+
 
 ######################
 ####Create objects####
@@ -38,8 +45,11 @@ file3 = r"C:\Users\matty\OneDrive\Politics\Mayor Felicia\Data\COBRA-2020-OldRMS-
 file4 = r"C:\Users\matty\OneDrive\Politics\Mayor Felicia\Data\COBRA-2009-2019.csv"
 file_list = [file1, file2, file3, file4]
 
-#Which columns to keep
+#Columns to keep in original dataframe
 keep_cols = ['rpt_date','UC2_Literal','neighborhood','lat','long']
+
+#Columns to keep in matching dataframe
+match_cols = ['lat','long','house_number','road']
 
 #Establish Connection to geopy mechanism
 geolocator = geopy.Nominatim(user_agent='bob')
@@ -56,8 +66,9 @@ crime_df = import_data(file_list)
 geodata = crime_df[:10].apply(get_geodata, axis=1, geolocator=geolocator, lat_field='lat', lon_field='long')
 
 #Extract zip codes and matching information from geodata
-for index, value in geodata.items():
-        print(f"Index : {index}, latitude : {value['lat']}, longitude : {value['lon']}, house number : {value['address']['house_number']}, road : {value['address']['road']}")
+match_df = create_match_file(geodata)
+print(match_df)
+
 
 #def main():
     #Import Data
