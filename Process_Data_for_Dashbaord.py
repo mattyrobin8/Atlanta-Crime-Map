@@ -12,9 +12,9 @@ import geopy
 
 def import_data(file_location):
     '''Import the data and append to one dataframe'''
-    df  = pd.DataFrame(columns=keep_cols)
+    df  = pd.DataFrame(columns = keep_cols)
     for datafile in file_location:
-        data = pd.read_csv(datafile, low_memory=False)
+        data = pd.read_csv(datafile, low_memory = False)
         if datafile == r"C:\Users\matty\OneDrive\Politics\Mayor Felicia\Data\COBRA-2009-2019.csv":
             data = data.rename(columns = {'Report Date':keep_cols[0], 'UCR Literal':keep_cols[1], 'Neighborhood':keep_cols[2], 'Latitude':keep_cols[3], 'Longitude':keep_cols[4]})
         data = data[keep_cols]
