@@ -16,7 +16,7 @@ def import_data(file_location):
     for datafile in file_location:
         data = pd.read_csv(datafile, low_memory = False)
         if datafile == r"C:\Users\matty\OneDrive\Politics\Mayor Felicia\Data\COBRA-2009-2019.csv":
-            data = data.rename(columns = {'Report Date':keep_cols[0], 'UCR Literal':keep_cols[1], 'Neighborhood':keep_cols[2], 'Latitude':keep_cols[3], 'Longitude':keep_cols[4]})
+            data = data.rename(columns = {'Report Date':keep_cols[0], 'Location':keep_cols[1], 'UCR Literal':keep_cols[2], 'Neighborhood':keep_cols[3], 'Latitude':keep_cols[4], 'Longitude':keep_cols[5]})
         data = data[keep_cols]
         df = df.append(data, ignore_index = True)
     return df
@@ -49,7 +49,7 @@ file4 = r"C:\Users\matty\OneDrive\Politics\Mayor Felicia\Data\COBRA-2009-2019.cs
 file_list = [file1, file2, file3, file4]
 
 #Columns to keep in original dataframe
-keep_cols = ['rpt_date', 'UC2_Literal', 'neighborhood', 'lat', 'long']
+keep_cols = ['rpt_date', 'location', 'UC2_Literal', 'neighborhood', 'lat', 'long']
 
 #Columns to keep in matching dataframe
 match_cols = ['lat', 'long', 'house_number', 'road']
