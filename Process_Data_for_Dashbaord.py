@@ -46,10 +46,10 @@ file4 = r"C:\Users\matty\OneDrive\Politics\Mayor Felicia\Data\COBRA-2009-2019.cs
 file_list = [file1, file2, file3, file4]
 
 #Columns to keep in original dataframe
-keep_cols = ['rpt_date','UC2_Literal','neighborhood','lat','long']
+keep_cols = ['rpt_date', 'UC2_Literal', 'neighborhood', 'lat', 'long']
 
 #Columns to keep in matching dataframe
-match_cols = ['lat','long','house_number','road']
+match_cols = ['lat', 'long', 'house_number', 'road']
 
 #Establish Connection to geopy mechanism
 geolocator = geopy.Nominatim(user_agent='bob')
@@ -67,8 +67,9 @@ geodata = crime_df[:10].apply(get_geodata, axis=1, geolocator=geolocator, lat_fi
 
 #Extract zip codes and matching information from geodata
 match_df = create_match_file(geodata)
-print(match_df)
 
+match_geo_df = pd.merge(crime_df, match_df, how="inner", on=['lat', 'long'], sort=True, suffixes=("_orig", "_match"), copy=True, validate=None)
+print(match_geo_df)
 
 #def main():
     #Import Data
