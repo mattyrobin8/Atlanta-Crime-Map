@@ -67,9 +67,8 @@ geodata = crime_df[:10].apply(get_geodata, axis=1, geolocator=geolocator, lat_fi
 
 #Extract zip codes and matching information from geodata
 match_df = create_match_file(geodata)
+print(match_df)
 
-match_geo_df = pd.merge(crime_df, match_df, how="inner", on=['lat', 'long'], sort=True, suffixes=("_orig", "_match"), copy=True, validate=None)
-print(match_geo_df)
 
 #def main():
     #Import Data
