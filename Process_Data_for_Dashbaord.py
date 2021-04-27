@@ -30,7 +30,7 @@ def create_match_file(df):
     '''Create DataFrame from GeoData to match back to original data to find Zip Codes'''
     match_df = pd.DataFrame(columns = match_cols)
     for index, value in df.items():
-        temp_df = pd.DataFrame([[value['lat'], value['lon'], value['address']['house_number'], value['address']['road']]], columns = match_cols)
+        temp_df = pd.DataFrame([[value['lat'], value['lon'], value['address']['postcode']]], columns = match_cols)
         match_df = match_df.append(temp_df, ignore_index = True)
     match_df['lat'] = pd.to_numeric(match_df['lat'])
     match_df['long'] = pd.to_numeric(match_df['long'])
@@ -52,7 +52,7 @@ file_list = [file1, file2, file3, file4]
 keep_cols = ['rpt_date', 'location', 'UC2_Literal', 'neighborhood', 'lat', 'long']
 
 #Columns to keep in matching dataframe
-match_cols = ['lat', 'long', 'house_number', 'road']
+match_cols = ['lat', 'long', 'zipcode']
 
 #Establish Connection to geopy mechanism
 geolocator = geopy.Nominatim(user_agent='bob')
@@ -71,11 +71,11 @@ geodata = crime_df[:10].apply(get_geodata, axis=1, geolocator=geolocator, lat_fi
 #Extract zip codes and matching information from geodata
 match_df = create_match_file(geodata)
 
-match_geo_df = pd.merge(crime_df, match_df, how="inner", on=['lat', 'long'], sort=True, suffixes=("_orig", "_match"), copy=True, validate=None)
-#print(match_geo_df)
+match_geo_df = pd.merge(crime_df, match_df, how="inner", left_index=True, right_index=True, sort=True, suffixes=("_orig", "_match"), copy=True, validate=None)
 
 print(crime_df)
 print(match_df)
+print(match_geo_df)
 
 #def main():
     #Import Data
