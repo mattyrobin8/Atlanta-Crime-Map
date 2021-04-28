@@ -36,6 +36,11 @@ def create_match_file(df):
     match_df['long'] = pd.to_numeric(match_df['long'])
     return match_df
 
+def merge_export_df(df1,df2):
+    '''Merge the original and match dataframes then export'''
+    match_geo_df = pd.merge(df1, df2, how="inner", left_index=True, right_index=True, sort=True, suffixes=("_orig", "_match"), copy=True, validate=None)
+    match_geo_df.to_csv(r'C:\Users\matty\OneDrive\Politics\Mayor Felicia\Data\crime_with_zips.csv', index = False)
+
 
 ######################
 ####Create objects####
@@ -73,11 +78,8 @@ def main():
     #Extract zip codes and matching information from geodata
     match_df = create_match_file(geodata)
 
-    #Merge the dataframes to retrieve zipcode from match df
-    match_geo_df = pd.merge(crime_df, match_df, how="inner", left_index=True, right_index=True, sort=True, suffixes=("_orig", "_match"), copy=True, validate=None)
-
-    #Export matched df
-    match_geo_df.to_csv(r'C:\Users\matty\OneDrive\Politics\Mayor Felicia\Data\crime_with_zips.csv', index = False)
+    #Merge the dataframes the export
+    merge_export_df(crime_df, match_df)
 
 if __name__ == '__main__':
     main()
