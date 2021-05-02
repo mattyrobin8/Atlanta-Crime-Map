@@ -4,6 +4,7 @@
 
 import pandas as pd
 import geopy
+import time
 
 
 ######################
@@ -73,7 +74,7 @@ def main():
     crime_df = import_data(file_list)
 
     #Retrieve GeoData
-    geodata = crime_df[:100].apply(get_geodata, axis=1, geolocator=geolocator, lat_field='lat', lon_field='long')
+    geodata = crime_df[0:1].apply(get_geodata, axis=1, geolocator=geolocator, lat_field='lat', lon_field='long')
 
     #Extract zip codes and matching information from geodata
     match_df = create_match_file(geodata)
@@ -82,4 +83,6 @@ def main():
     merge_export_df(crime_df, match_df)
 
 if __name__ == '__main__':
+    start_time = time.time()
     main()
+    print("--- %s seconds ---" % (time.time() - start_time))
