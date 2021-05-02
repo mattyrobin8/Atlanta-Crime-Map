@@ -27,12 +27,25 @@ def get_geodata(df, geolocator, lat_field, lon_field):
     location = geolocator.reverse((df[lat_field], df[lon_field]))
     return location.raw
 
-def create_match_file(df):
+def create_match_file(geo_object):
     '''Create DataFrame from GeoData to match back to original data to find Zip Codes'''
     match_df = pd.DataFrame(columns = match_cols)
-    for index, value in df.items():
+    for index, value in geo_object.items():
         temp_df = pd.DataFrame([[value['lat'], value['lon'], value['address']['postcode']]], columns = match_cols)
         match_df = match_df.append(temp_df, ignore_index = True)
+    match_df['lat'] = pd.to_numeric(match_df['lat'])
+    match_df['long'] = pd.to_numeric(match_df['long'])
+    return match_df
+
+def create_geo_file(df):
+    '''Use Latitude and Longitude to find the Zip Codes'''
+    match_df = pd.DataFrame(columns = match_cols)
+    for row in range(1,len(df.index)):
+        geo_object = df[row-1:row].apply(get_geodata, axis=1, geolocator=geolocator, lat_field='lat', lon_field='long')
+        for index, value in geo_object.items():
+            temp_df = pd.DataFrame([[value['lat'], value['lon'], value['address']['postcode']]], columns = match_cols)
+            match_df = match_df.append(temp_df, ignore_index = True)
+            print(len(match_df.index))
     match_df['lat'] = pd.to_numeric(match_df['lat'])
     match_df['long'] = pd.to_numeric(match_df['long'])
     return match_df
@@ -74,10 +87,14 @@ def main():
     crime_df = import_data(file_list)
 
     #Retrieve GeoData
-    geodata = crime_df[0:1].apply(get_geodata, axis=1, geolocator=geolocator, lat_field='lat', lon_field='long')
-
+    #geodata = crime_df[0:1].apply(get_geodata, axis=1, geolocator=geolocator, lat_field='lat', lon_field='long')
+    #print(geodata)
     #Extract zip codes and matching information from geodata
-    match_df = create_match_file(geodata)
+    #match_df = create_match_file(geodata)
+
+    #Retrieve GeoData
+    match_df = create_geo_file(crime_df)
+    print(match_df)
 
     #Merge the dataframes the export
     merge_export_df(crime_df, match_df)
