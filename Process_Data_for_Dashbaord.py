@@ -15,11 +15,10 @@ def import_data(file_location):
     '''Import the data and append to one dataframe'''
     df  = pd.DataFrame(columns = keep_cols)
     for datafile in file_location:
-        data = pd.read_csv(datafile, low_memory = False)
-        if datafile == r"C:\Users\matty\OneDrive\Politics\Mayor Felicia\Data\COBRA-2009-2019.csv":
-            data = data.rename(columns = {'Report Date':keep_cols[0], 'Location':keep_cols[1], 'UCR Literal':keep_cols[2], 'Neighborhood':keep_cols[3], 'Latitude':keep_cols[4], 'Longitude':keep_cols[5]})
+        data = pd.read_csv(datafile, parse_dates = ['rpt_date'],low_memory = False)
         data = data[keep_cols]
         df = df.append(data, ignore_index = True)
+    df = df[(df['rpt_date']>pd.Timestamp(2018,1,1))]
     return df
 
 def get_geodata(df, geolocator, lat_field, lon_field):
