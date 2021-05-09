@@ -19,6 +19,7 @@ def import_data(file_location):
         data = data[keep_cols]
         df = df.append(data, ignore_index = True)
     df = df[(df['rpt_date']>pd.Timestamp(2018,1,1))]
+    df[['Crime','Crime Extra']] = df.UC2_Literal.str.split("-",expand=True)
     return df
 
 def get_geodata(df, geolocator, lat_field, lon_field):
@@ -50,9 +51,9 @@ def create_geo_file(df):
                 pass
             match_df = match_df.append(temp_df, ignore_index = True)
             print(len(match_df.index))
-            match_geo_df = pd.merge(df, match_df, how="inner", left_index=True, right_index=True, sort=True, suffixes=("_orig", "_match"), copy=True, validate=None)
-            match_geo_df.to_csv(r'C:\Users\matty\OneDrive\Politics\Mayor Felicia\Data\crime_with_zips.csv', index = False)
-    return match_geo_df
+    match_df['lat'] = pd.to_numeric(match_df['lat'])
+    match_df['long'] = pd.to_numeric(match_df['long'])
+    return match_df
 
 def merge_export_df(df1,df2):
     '''Merge the original and match dataframes then export'''
@@ -95,13 +96,12 @@ def main():
     #print(geodata)
     #Extract zip codes and matching information from geodata
     #match_df = create_match_file(geodata)
-
-    #Merge the dataframes the export
-    #merge_export_df(crime_df, match_df)
     
     #Retrieve GeoData
-    match_geo_df = create_geo_file(crime_df)
-    print(match_geo_df)
+    match_df = create_geo_file(crime_df)
+
+    #Merge the dataframes the export
+    merge_export_df(crime_df, match_df)
 
 if __name__ == '__main__':
     start_time = time.time()
