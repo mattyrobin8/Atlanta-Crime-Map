@@ -18,8 +18,7 @@ def import_data(file_location):
         data = pd.read_csv(datafile, parse_dates = ['rpt_date'],low_memory = False)
         data = data[keep_cols]
         df = df.append(data, ignore_index = True)
-    df = df[(df['rpt_date']>pd.Timestamp(2018,1,1))]
-    df[['Crime','Crime Extra']] = df.UC2_Literal.str.split("-",expand=True)
+    df = df[(df['rpt_date'] > pd.Timestamp(2018,1,1))]
     return df
 
 def get_geodata(df, geolocator, lat_field, lon_field):
@@ -28,27 +27,24 @@ def get_geodata(df, geolocator, lat_field, lon_field):
     return location.raw
 
 def create_geo_file(df):
-    '''Use Latitude and Longitude to find the Zip Codes'''
+    '''For each row in the df, run get_geodata and append to new match_df. If zipcode is missing from get_geodata then skip row'''
     match_df = pd.DataFrame(columns = match_cols)
     for row in range(1,len(df.index)):
         geo_object = df[row-1:row].apply(get_geodata, axis=1, geolocator=geolocator, lat_field='lat', lon_field='long')
         for index, value in geo_object.items():
             try:
                 temp_df = pd.DataFrame([[value['lat'], value['lon'], value['address']['postcode']]], columns = match_cols)
-                temp_df['lat'] = pd.to_numeric(temp_df['lat'])
-                temp_df['long'] = pd.to_numeric(temp_df['long'])
             except:
                 pass
             match_df = match_df.append(temp_df, ignore_index = True)
-            print(len(match_df.index))
-    match_df['lat'] = pd.to_numeric(match_df['lat'])
-    match_df['long'] = pd.to_numeric(match_df['long'])
     return match_df
 
 def merge_export_df(df1,df2):
     '''Merge the original and match dataframes then export'''
-    match_geo_df = pd.merge(df1, df2, how="inner", left_index=True, right_index=True, sort=True, suffixes=("_orig", "_match"), copy=True, validate=None)
-    match_geo_df.to_csv(r'C:\Users\matty\OneDrive\Politics\Mayor Felicia\Data\crime_with_zips.csv', index = False)
+    df2['lat'] = pd.to_numeric(match_df['lat'])
+    df2['long'] = pd.to_numeric(match_df['long'])
+    match_geo_df = pd.merge(df1, df2, how="inner", left_index=True, right_index=True, sort=True, suffixes=("_orig", "_match"))
+    match_geo_df.to_csv(r'C:\Users\matty\OneDrive\Politics\Mayor Felicia\Out\crime_with_zips.csv', index = False)
 
 
 ######################
