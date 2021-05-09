@@ -12,7 +12,7 @@ import time
 ######################
 
 def import_data(file_location):
-    '''Import the data and append to one dataframe'''
+    '''Import the data and append to one dataframe. Keep data that occurs after Bottoms was elected.'''
     df  = pd.DataFrame(columns = keep_cols)
     for datafile in file_location:
         data = pd.read_csv(datafile, parse_dates = ['rpt_date'],low_memory = False)
