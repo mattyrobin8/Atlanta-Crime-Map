@@ -36,7 +36,8 @@ def main():
 	crime_df = import_data(file_location)
 	print(crime_df)
 
-	query = """
+	#Create ATL crime dataframe
+	crime_query = """
 			select  strftime('%Y', rpt_date) as year
 					,Crime
 					,count(*) as crime
@@ -44,12 +45,18 @@ def main():
 			group by Crime
 					 ,strftime('%Y', rpt_date)
 		"""
+	atlcrime_df = ps.sqldf(crime_query)
 
 	query1 = """
 			select  min(rpt_date) as date
 			from crime_df
 		"""
 	print(ps.sqldf(query1))
+
+	#Create ATL population dataframe
+	data = [['2018',459600],['2019',470500],['2020',478200],['2021',(478200-470500) + 478200]]
+	atlpop_df  = pd.DataFrame(data, columns = ['year', 'population'])
+	print(atlpop_df)
 
 
 #Run Main script and record runtime
