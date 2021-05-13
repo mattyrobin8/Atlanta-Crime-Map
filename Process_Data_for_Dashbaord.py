@@ -2,6 +2,7 @@
 ###Import Libraries###
 ######################
 
+from numpy.core.numeric import NaN
 import pandas as pd
 import geopy
 import time
@@ -17,8 +18,9 @@ def import_data(file_location):
     for datafile in file_location:
         data = pd.read_csv(datafile, parse_dates = ['rpt_date'],low_memory = False)
         data = data[keep_cols]
+        df = df[(df['rpt_date'] > pd.Timestamp(2018,1,1))]
         df = df.append(data, ignore_index = True)
-    df = df[(df['rpt_date'] > pd.Timestamp(2018,1,1))]
+    df.to_csv(export_crime)
     return df
 
 def get_geodata(df, geolocator, lat_field, lon_field):
@@ -35,16 +37,18 @@ def create_geo_file(df):
             try:
                 temp_df = pd.DataFrame([[value['lat'], value['lon'], value['address']['postcode']]], columns = match_cols)
             except:
-                pass
+                temp_df = pd.DataFrame([[value['lat'], value['lon'], None]], columns = match_cols)
             match_df = match_df.append(temp_df, ignore_index = True)
+            print(match_df.tail(n=1))
+    match_df.to_csv(export_match)
     return match_df
 
 def merge_export_df(df1,df2):
     '''Merge the original and match dataframes then export'''
-    df2['lat'] = pd.to_numeric(match_df['lat'])
-    df2['long'] = pd.to_numeric(match_df['long'])
-    match_geo_df = pd.merge(df1, df2, how="inner", left_index=True, right_index=True, sort=True, suffixes=("_orig", "_match"))
-    match_geo_df.to_csv(r'C:\Users\matty\OneDrive\Politics\Mayor Felicia\Out\crime_with_zips.csv', index = False)
+    df2['lat'] = pd.to_numeric(df2['lat'])
+    df2['long'] = pd.to_numeric(df2['long'])
+    match_geo_df = pd.merge(df1, df2, how="inner", left_index=True, right_index=True, suffixes=("_orig", "_match"))
+    match_geo_df.to_csv(export_file)
 
 
 ######################
@@ -57,6 +61,9 @@ file2 = r"C:\Users\matty\OneDrive\Politics\Mayor Felicia\Data\COBRA-2020(NEW RMS
 file3 = r"C:\Users\matty\OneDrive\Politics\Mayor Felicia\Data\COBRA-2020-OldRMS-09292020.csv"
 file4 = r"C:\Users\matty\OneDrive\Politics\Mayor Felicia\Data\COBRA-2009-2019.csv"
 file_list = [file1, file2, file3, file4]
+export_crime = r"C:\Users\matty\OneDrive\Politics\Mayor Felicia\Out\crime.csv"
+export_match = r"C:\Users\matty\OneDrive\Politics\Mayor Felicia\Out\match.csv"
+export_file = r"C:\Users\matty\OneDrive\Politics\Mayor Felicia\Out\crime_with_zips.csv"
 
 #Columns to keep in original dataframe
 keep_cols = ['rpt_date', 'location', 'UC2_Literal', 'neighborhood', 'lat', 'long']
@@ -65,7 +72,7 @@ keep_cols = ['rpt_date', 'location', 'UC2_Literal', 'neighborhood', 'lat', 'long
 match_cols = ['lat', 'long', 'zipcode']
 
 #Establish Connection to geopy mechanism
-geolocator = geopy.Nominatim(user_agent='bob')
+geolocator = geopy.Nominatim(user_agent='boob')
 
 
 #####################
