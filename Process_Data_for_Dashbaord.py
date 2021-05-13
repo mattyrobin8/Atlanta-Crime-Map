@@ -18,7 +18,7 @@ def import_data(file_location):
     for datafile in file_location:
         data = pd.read_csv(datafile, parse_dates = ['rpt_date'],low_memory = False)
         data = data[keep_cols]
-        df = df[(df['rpt_date'] > pd.Timestamp(2018,1,1))]
+        data = data[(data['rpt_date'] > pd.Timestamp(2018,1,1))]
         df = df.append(data, ignore_index = True)
     df.to_csv(export_crime)
     return df
