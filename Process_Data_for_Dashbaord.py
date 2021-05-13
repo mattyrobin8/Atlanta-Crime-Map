@@ -55,12 +55,14 @@ def merge_export_df(df1,df2):
 ####Create objects####
 ######################
 
-#list files
+#Import files
 file1 = r"C:\Users\matty\OneDrive\Politics\Mayor Felicia\Data\COBRA-2021.csv"
 file2 = r"C:\Users\matty\OneDrive\Politics\Mayor Felicia\Data\COBRA-2020(NEW RMS 9-30 12-31).csv"
 file3 = r"C:\Users\matty\OneDrive\Politics\Mayor Felicia\Data\COBRA-2020-OldRMS-09292020.csv"
 file4 = r"C:\Users\matty\OneDrive\Politics\Mayor Felicia\Data\COBRA-2009-2019.csv"
 file_list = [file1, file2, file3, file4]
+
+#Export files
 export_crime = r"C:\Users\matty\OneDrive\Politics\Mayor Felicia\Out\crime.csv"
 export_match = r"C:\Users\matty\OneDrive\Politics\Mayor Felicia\Out\match.csv"
 export_file = r"C:\Users\matty\OneDrive\Politics\Mayor Felicia\Out\crime_with_zips.csv"
