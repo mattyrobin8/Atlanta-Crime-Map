@@ -33,14 +33,21 @@ file_location = r"C:\Users\matty\OneDrive\Politics\Mayor Felicia\Out\crime_with_
 
 def main():
 
-    #Import and clean data
+    #Import
 	crime_df = import_data(file_location)
-	crime_df['year'] = pd.DatetimeIndex(crime_df['rpt_date']).year
-	crime_df['month'] = pd.DatetimeIndex(crime_df['rpt_date']).month
-	crime_df['year_month'] = pd.to_datetime(crime_df[['year','month']].assign(day=1)).dt.to_period('M')
-	print(crime_df['rpt_date'].dtype)
 
 	#Create ATL crime dataframe
+	crime_query = """
+			select  strftime('%Y%m', rpt_date) as year
+					,Crime
+					,count(*) as crime
+			from crime_df
+			group by Crime
+					 ,strftime('%Y%m', rpt_date)
+			order by strftime('%Y%m', rpt_date)
+		"""
+	atlcrime_df = ps.sqldf(crime_query)
+	print(atlcrime_df)
 
 
 	#Create ATL population dataframe
