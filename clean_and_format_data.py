@@ -39,14 +39,14 @@ def main():
 	#Create ATL crime dataframe
 	crime_query = """
 			select  	strftime('%Y', rpt_date) as year
-						,strftime('%Y%m', rpt_date) as year_month
+						--,strftime('%Y%m', rpt_date) as year_month
 						,Crime
 						,count(*) as total_crime
 			from 		crime_df
 			group by 	Crime
 						,strftime('%Y', rpt_date)
-					 	,strftime('%Y%m', rpt_date)
-			order by 	strftime('%Y%m', rpt_date)
+					 	--,strftime('%Y%m', rpt_date)
+
 		"""
 	atlcrime_df = ps.sqldf(crime_query)
 
@@ -56,13 +56,15 @@ def main():
 
 	#Join ATL crime and population dataframes
 	crimepop_query = """
-			select  	year_month
+			select  	crime.year
 						,Crime
 						,total_crime
 						,population
 			from 		atlcrime_df crime
 			join		atlpop_df pop
 			on			crime.year = pop.year
+			order by 	Crime
+						,crime.year
 		"""
 	atlcrimepop_df = ps.sqldf(crimepop_query)
 	atlcrimepop_df['crimes_per_100K'] = (atlcrimepop_df['total_crime'] / atlcrimepop_df['population']) * 100000
