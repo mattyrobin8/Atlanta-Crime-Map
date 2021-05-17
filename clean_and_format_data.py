@@ -49,12 +49,10 @@ def main():
 			order by 	strftime('%Y%m', rpt_date)
 		"""
 	atlcrime_df = ps.sqldf(crime_query)
-	#print(atlcrime_df)
 
 	#Create ATL population dataframe
 	data = [['2018',459600],['2019',470500],['2020',478200],['2021',(478200-470500) + 478200]]
 	atlpop_df  = pd.DataFrame(data, columns = ['year', 'population'])
-	#print(atlpop_df)
 
 	#Join ATL crime and population dataframes
 	crimepop_query = """
@@ -62,13 +60,12 @@ def main():
 						,Crime
 						,total_crime
 						,population
-						,(total_crime/population) as crime_per_pop
-						,(total_crime/population) * 100000 as crimes_per_1K
 			from 		atlcrime_df crime
 			join		atlpop_df pop
 			on			crime.year = pop.year
 		"""
 	atlcrimepop_df = ps.sqldf(crimepop_query)
+	atlcrimepop_df['crimes_per_100K'] = (atlcrimepop_df['total_crime'] / atlcrimepop_df['population']) * 100000
 	print(atlcrimepop_df)
 
 
