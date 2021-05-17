@@ -2,6 +2,7 @@
 ###Import Libraries###
 ######################
 
+from os import error
 import pandas as pd
 import pandasql as ps
 import time
@@ -32,31 +33,20 @@ file_location = r"C:\Users\matty\OneDrive\Politics\Mayor Felicia\Out\crime_with_
 
 def main():
 
-    #Import Data
+    #Import and clean data
 	crime_df = import_data(file_location)
-	print(crime_df)
+	crime_df['year'] = pd.DatetimeIndex(crime_df['rpt_date']).year
+	crime_df['month'] = pd.DatetimeIndex(crime_df['rpt_date']).month
+	crime_df['year_month'] = pd.to_datetime(crime_df[['year','month']].assign(day=1)).dt.to_period('M')
+	print(crime_df['rpt_date'].dtype)
 
 	#Create ATL crime dataframe
-	crime_query = """
-			select  strftime('%Y', rpt_date) as year
-					,Crime
-					,count(*) as crime
-			from crime_df
-			group by Crime
-					 ,strftime('%Y', rpt_date)
-		"""
-	atlcrime_df = ps.sqldf(crime_query)
 
-	query1 = """
-			select  min(rpt_date) as date
-			from crime_df
-		"""
-	print(ps.sqldf(query1))
 
 	#Create ATL population dataframe
 	data = [['2018',459600],['2019',470500],['2020',478200],['2021',(478200-470500) + 478200]]
 	atlpop_df  = pd.DataFrame(data, columns = ['year', 'population'])
-	print(atlpop_df)
+	#print(atlpop_df)
 
 
 #Run Main script and record runtime
