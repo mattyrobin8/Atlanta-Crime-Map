@@ -38,22 +38,38 @@ def main():
 
 	#Create ATL crime dataframe
 	crime_query = """
-			select  strftime('%Y%m', rpt_date) as year
-					,Crime
-					,count(*) as crime
-			from crime_df
-			group by Crime
-					 ,strftime('%Y%m', rpt_date)
-			order by strftime('%Y%m', rpt_date)
+			select  	strftime('%Y', rpt_date) as year
+						,strftime('%Y%m', rpt_date) as year_month
+						,Crime
+						,count(*) as total_crime
+			from 		crime_df
+			group by 	Crime
+						,strftime('%Y', rpt_date)
+					 	,strftime('%Y%m', rpt_date)
+			order by 	strftime('%Y%m', rpt_date)
 		"""
 	atlcrime_df = ps.sqldf(crime_query)
-	print(atlcrime_df)
-
+	#print(atlcrime_df)
 
 	#Create ATL population dataframe
 	data = [['2018',459600],['2019',470500],['2020',478200],['2021',(478200-470500) + 478200]]
 	atlpop_df  = pd.DataFrame(data, columns = ['year', 'population'])
 	#print(atlpop_df)
+
+	#Join ATL crime and population dataframes
+	crimepop_query = """
+			select  	year_month
+						,Crime
+						,total_crime
+						,population
+						,(total_crime/population) as crime_per_pop
+						,(total_crime/population) * 100000 as crimes_per_1K
+			from 		atlcrime_df crime
+			join		atlpop_df pop
+			on			crime.year = pop.year
+		"""
+	atlcrimepop_df = ps.sqldf(crimepop_query)
+	print(atlcrimepop_df)
 
 
 #Run Main script and record runtime
