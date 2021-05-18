@@ -39,16 +39,17 @@ def main():
 	#Create ATL crime dataframe
 	crime_query = """
 			select  	strftime('%Y', rpt_date) as year
+						,strftime('%m', rpt_date) as month
 						,strftime('%Y%m', rpt_date) as year_month
 						,zipcode
 						,Crime
 						,count(*) as total_crime
 			from 		crime_df
 			group by 	Crime
-						,strftime('%Y', rpt_date)
 						,zipcode
+						,strftime('%Y', rpt_date)
+						,strftime('%m', rpt_date)
 					 	,strftime('%Y%m', rpt_date)
-
 		"""
 	atlcrime_df = ps.sqldf(crime_query)
 
