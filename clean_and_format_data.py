@@ -102,7 +102,7 @@ denominator_2021_query = """
 index_2021_query = """
 				select		num.year
 							,num.Crime
-							,num.total_crime / dem.total_crime as crime_index
+							,cast(num.total_crime as float) / cast(dem.total_crime as float) as crime_index
 				from 		numerator_2021_df num
 				join		denominator_2021_df dem
 				on			num.year = dem.year
