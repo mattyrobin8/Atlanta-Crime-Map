@@ -16,6 +16,7 @@ def import_data(file_location):
 	'''Read in Crime Data'''
 	df = pd.read_csv(file_location, low_memory = False)
 	df[['Crime','Crime Extra']] = df.UC2_Literal.str.split("-",expand=True)
+	df['Crime'] = df['Crime'].replace(['MANSLAUGHTER'],'HOMICIDE')
 	return df
 
 
@@ -73,30 +74,27 @@ crimepop_query = """
 #Pull numerator for extrapolation of 2021 data
 numerator_2021_query = """
 				select  	year
-							,zipcode
 							,Crime
 							,sum(total_crime) as total_crime
 				from 		atlcrime_df
 				where		zipcode not in ('None')
-				and			month <= 4
+				and			month in ('01','02','03','04')
 				and			year <= 2020
 				group by	year
-							,zipcode
 							,Crime
 				order by 	year
+							,Crime
 				"""
 
 #Pull denominator for extrapolation of 2021 data
 denominator_2021_query = """
 				select  	year
-							,zipcode
 							,Crime
 							,sum(total_crime) as total_crime
 				from 		atlcrime_df
 				where		zipcode not in ('None')
 				and			year <= 2020
 				group by	year
-							,zipcode
 							,Crime
 				order by 	year
 				"""
