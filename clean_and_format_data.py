@@ -71,8 +71,21 @@ crimepop_query = """
 				order by 	year_month
 				"""
 
-#Pull numerator for extrapolation of 2021 data
+#Pull denominator for extrapolation of 2021 data
 numerator_2021_query = """
+				select  	year
+							,Crime
+							,sum(total_crime) as total_crime
+				from 		atlcrime_df
+				where		zipcode not in ('None')
+				and			year <= 2020
+				group by	year
+							,Crime
+				order by 	year
+				"""
+
+#Pull numerator for extrapolation of 2021 data
+denominator_2021_query = """
 				select  	year
 							,Crime
 							,sum(total_crime) as total_crime
@@ -86,19 +99,15 @@ numerator_2021_query = """
 							,Crime
 				"""
 
-#Pull denominator for extrapolation of 2021 data
-denominator_2021_query = """
-				select  	year
-							,Crime
-							,sum(total_crime) as total_crime
-				from 		atlcrime_df
-				where		zipcode not in ('None')
-				and			year <= 2020
-				group by	year
-							,Crime
-				order by 	year
+index_2021_query = """
+				select		num.year
+							,num.Crime
+							,num.total_crime / dem.total_crime as crime_index
+				from 		numerator_2021_df num
+				join		denominator_2021_df dem
+				on			num.year = dem.year
+				and			num.Crime = dem.Crime
 				"""
-
 
 #####################
 ####Run functions####
@@ -118,11 +127,13 @@ def main():
 
 	#Run 2021 numerator
 	numerator_2021_df = ps.sqldf(numerator_2021_query)
-	print(numerator_2021_df)
 
 	#Run 2021 denominator
 	denominator_2021_df = ps.sqldf(denominator_2021_query)
-	print(denominator_2021_df)
+
+	#Run 2021 crime index query 
+	index_2021_df = ps.sqldf(index_2021_query)
+	print(index_2021_df)
 
 
 #Run Main script and record runtime
