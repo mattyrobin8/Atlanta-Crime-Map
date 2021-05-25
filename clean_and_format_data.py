@@ -79,6 +79,10 @@ numerator_2021_query = """
 				from 		atlcrime_df
 				where		zipcode not in ('None')
 				and			month <= 4
+				and			year <= 2020
+				group by	year
+							,zipcode
+							,Crime
 				order by 	year
 				"""
 
@@ -90,6 +94,10 @@ denominator_2021_query = """
 							,sum(total_crime) as total_crime
 				from 		atlcrime_df
 				where		zipcode not in ('None')
+				and			year <= 2020
+				group by	year
+							,zipcode
+							,Crime
 				order by 	year
 				"""
 
@@ -102,11 +110,9 @@ def main():
 
     #Import processed crime dataframe
 	crime_df = import_data(file_location)
-	print(crime_df)
 
 	#Run ATL crime query
 	atlcrime_df = ps.sqldf(crime_query)
-	print(atlcrime_df)
 
 	#Run ATL population query
 	atlcrimepop_df = ps.sqldf(crimepop_query)
