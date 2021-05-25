@@ -26,6 +26,7 @@ def import_data(file_location):
 
 #List files
 file_location = r"C:\Users\matty\OneDrive\Politics\Mayor Felicia\Out\crime_with_zips.csv"
+export_file = r"C:\Users\matty\OneDrive\Politics\Mayor Felicia\Out\crime_for_tableau.csv"
 
 #Create ATL population dataframe
 data = [['2018',459600],['2019',470500],['2020',478200],['2021',(478200-470500) + 478200]]
@@ -162,9 +163,13 @@ def main():
 	
 	#Run 2020 Crime query
 	crime_2020_df = ps.sqldf(crime_2020_query)
-	print(crime_2020_df)
 
 	#Append 2021 extrapolated to 2020 actuals
+	crime_aggregated_df = crime_2020_df.append(crime_2021_df, ignore_index=True)
+	print(crime_aggregated_df)
+
+	#Export the data
+	crime_aggregated_df.to_csv(export_file, index=False)
 
 
 #Run Main script and record runtime
