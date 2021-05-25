@@ -26,6 +26,10 @@ def import_data(file_location):
 #List files
 file_location = r"C:\Users\matty\OneDrive\Politics\Mayor Felicia\Out\crime_with_zips.csv"
 
+#Create ATL population dataframe
+data = [['2018',459600],['2019',470500],['2020',478200],['2021',(478200-470500) + 478200]]
+atlpop_df = pd.DataFrame(data, columns = ['year', 'population'])
+
 
 #####################
 ####Run functions####
@@ -53,10 +57,6 @@ def main():
 					"""
 	atlcrime_df = ps.sqldf(crime_query)
 
-	#Create ATL population dataframe
-	data = [['2018',459600],['2019',470500],['2020',478200],['2021',(478200-470500) + 478200]]
-	atlpop_df = pd.DataFrame(data, columns = ['year', 'population'])
-
 	#Join ATL crime and population dataframes
 	crimepop_query = """
 					select  	crime.year
@@ -73,7 +73,7 @@ def main():
 					order by 	year_month
 					"""
 	atlcrimepop_df = ps.sqldf(crimepop_query)
-	atlcrimepop_df['crimes_per_100K'] = (atlcrimepop_df['total_crime'] / atlcrimepop_df['population']) * 100000
+	#atlcrimepop_df['crimes_per_100K'] = (atlcrimepop_df['total_crime'] / atlcrimepop_df['population']) * 100000
 	print(atlcrimepop_df)
 
 
