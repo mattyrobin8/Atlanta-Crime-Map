@@ -49,6 +49,9 @@ crime_query = 	"""
 							,strftime('%Y', rpt_date)
 							,strftime('%m', rpt_date)
 							,strftime('%Y%m', rpt_date)
+				order by	strftime('%Y%m', rpt_date)
+							,zipcode
+							,crime
 				"""
 
 #Join ATL crime and population dataframes
@@ -67,6 +70,29 @@ crimepop_query = """
 				order by 	year_month
 				"""
 
+#Pull numerator for extrapolation of 2021 data
+numerator_2021_query = """
+				select  	year
+							,zipcode
+							,Crime
+							,sum(total_crime) as total_crime
+				from 		atlcrime_df
+				where		zipcode not in ('None')
+				and			month <= 4
+				order by 	year
+				"""
+
+#Pull denominator for extrapolation of 2021 data
+denominator_2021_query = """
+				select  	year
+							,zipcode
+							,Crime
+							,sum(total_crime) as total_crime
+				from 		atlcrime_df
+				where		zipcode not in ('None')
+				order by 	year
+				"""
+
 
 #####################
 ####Run functions####
@@ -76,14 +102,23 @@ def main():
 
     #Import processed crime dataframe
 	crime_df = import_data(file_location)
+	print(crime_df)
 
 	#Run ATL crime query
 	atlcrime_df = ps.sqldf(crime_query)
+	print(atlcrime_df)
 
 	#Run ATL population query
 	atlcrimepop_df = ps.sqldf(crimepop_query)
 	#atlcrimepop_df['crimes_per_100K'] = (atlcrimepop_df['total_crime'] / atlcrimepop_df['population']) * 100000
-	print(atlcrimepop_df)
+
+	#Run 2021 numerator
+	numerator_2021_df = ps.sqldf(numerator_2021_query)
+	print(numerator_2021_df)
+
+	#Run 2021 denominator
+	denominator_2021_df = ps.sqldf(denominator_2021_query)
+	print(denominator_2021_df)
 
 
 #Run Main script and record runtime
