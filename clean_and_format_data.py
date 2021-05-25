@@ -99,6 +99,7 @@ denominator_2021_query = """
 							,Crime
 				"""
 
+#Create index for 2021 extrapolation
 index_2021_query = """
 				select		num.Crime
 							,avg(cast(num.total_crime as float) / cast(dem.total_crime as float)) as crime_index
@@ -109,6 +110,7 @@ index_2021_query = """
 				group by	num.Crime
 				"""
 
+#Apply 2021 crime index
 crime_2021_query = """
 				select 	year
 						,zipcode
@@ -118,6 +120,16 @@ crime_2021_query = """
 				join index_2021_df ind
 				on crime.Crime = ind.Crime
 				where year = 2021
+				"""
+
+#Pull 2020 crime data
+crime_2020_query = """
+				select 	year
+						,zipcode
+						,Crime
+						,total_crime
+				from atlcrime_df
+				where year not in (2021)
 				"""
 
 #####################
@@ -145,9 +157,14 @@ def main():
 	#Run 2021 crime index query 
 	index_2021_df = ps.sqldf(index_2021_query)
 
-	#Apply 2021 crime index 
+	#Run 2021 crime index 
 	crime_2021_df = ps.sqldf(crime_2021_query)
-	print(crime_2021_df)
+	
+	#Run 2020 Crime query
+	crime_2020_df = ps.sqldf(crime_2020_query)
+	print(crime_2020_df)
+
+	#Append 2021 extrapolated to 2020 actuals
 
 
 #Run Main script and record runtime
