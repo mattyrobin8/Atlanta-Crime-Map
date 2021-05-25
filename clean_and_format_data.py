@@ -45,6 +45,7 @@ crime_query = 	"""
 							,Crime
 							,count(*) as total_crime
 				from 		crime_df
+				where		zipcode not in ('None')
 				group by 	Crime
 							,zipcode
 							,strftime('%Y', rpt_date)
@@ -67,7 +68,6 @@ crimepop_query = """
 				from 		atlcrime_df crime
 				join		atlpop_df pop
 				on			crime.year = pop.year
-				where		zipcode not in ('None')
 				order by 	year_month
 				"""
 
@@ -109,6 +109,17 @@ index_2021_query = """
 				group by	num.Crime
 				"""
 
+crime_2021_query = """
+				select 	year
+						,zipcode
+						,crime.Crime
+						,cast(round(total_crime * crime_index,0) as int) as total_crime
+				from atlcrime_df crime
+				join index_2021_df ind
+				on crime.Crime = ind.Crime
+				where year = 2021
+				"""
+
 #####################
 ####Run functions####
 #####################
@@ -133,7 +144,10 @@ def main():
 
 	#Run 2021 crime index query 
 	index_2021_df = ps.sqldf(index_2021_query)
-	print(index_2021_df)
+
+	#Apply 2021 crime index 
+	crime_2021_df = ps.sqldf(crime_2021_query)
+	print(crime_2021_df)
 
 
 #Run Main script and record runtime
