@@ -31,47 +31,56 @@ data = [['2018',459600],['2019',470500],['2020',478200],['2021',(478200-470500) 
 atlpop_df = pd.DataFrame(data, columns = ['year', 'population'])
 
 
+######################
+####Create queries####
+######################
+
+#Create ATL crime dataframe
+crime_query = 	"""
+				select  	strftime('%Y', rpt_date) as year
+							,strftime('%m', rpt_date) as month
+							,strftime('%Y%m', rpt_date) as year_month
+							,zipcode
+							,Crime
+							,count(*) as total_crime
+				from 		crime_df
+				group by 	Crime
+							,zipcode
+							,strftime('%Y', rpt_date)
+							,strftime('%m', rpt_date)
+							,strftime('%Y%m', rpt_date)
+				"""
+
+#Join ATL crime and population dataframes
+crimepop_query = """
+				select  	crime.year
+							,month
+							,year_month
+							,zipcode
+							,Crime
+							,total_crime
+							,population
+				from 		atlcrime_df crime
+				join		atlpop_df pop
+				on			crime.year = pop.year
+				where		zipcode not in ('None')
+				order by 	year_month
+				"""
+
+
 #####################
 ####Run functions####
 #####################
 
 def main():
 
-    #Import
+    #Import processed crime dataframe
 	crime_df = import_data(file_location)
 
-	#Create ATL crime dataframe
-	crime_query = 	"""
-					select  	strftime('%Y', rpt_date) as year
-								,strftime('%m', rpt_date) as month
-								,strftime('%Y%m', rpt_date) as year_month
-								,zipcode
-								,Crime
-								,count(*) as total_crime
-					from 		crime_df
-					group by 	Crime
-								,zipcode
-								,strftime('%Y', rpt_date)
-								,strftime('%m', rpt_date)
-								,strftime('%Y%m', rpt_date)
-					"""
+	#Run ATL crime query
 	atlcrime_df = ps.sqldf(crime_query)
 
-	#Join ATL crime and population dataframes
-	crimepop_query = """
-					select  	crime.year
-								,month
-								,year_month
-								,zipcode
-								,Crime
-								,total_crime
-								,population
-					from 		atlcrime_df crime
-					join		atlpop_df pop
-					on			crime.year = pop.year
-					where		zipcode not in ('None')
-					order by 	year_month
-					"""
+	#Run ATL population query
 	atlcrimepop_df = ps.sqldf(crimepop_query)
 	#atlcrimepop_df['crimes_per_100K'] = (atlcrimepop_df['total_crime'] / atlcrimepop_df['population']) * 100000
 	print(atlcrimepop_df)
