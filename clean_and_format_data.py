@@ -172,11 +172,15 @@ def main():
 
 	#Run ATL population query
 	atlcrimepop_df = ps.sqldf(crimepop_query)
-	#print(atlcrimepop_df)
+
+	#Transform the data for easy pct change calculation
+	actuals_df = pd.pivot_table(data=atlcrimepop_df, index=['Crime','zipcode'], columns=['year'], values=['total_crime'])
+	percent_df = actuals_df.pct_change(axis='columns')
+	print(actuals_df)
+	print(percent_df)
 
 	#Export the data
-	blarg = pd.pivot_table(data=atlcrimepop_df, index=['Crime','zipcode'], columns=['year'], values=['total_crime'])
-	blarg.to_csv(export_file)
+	#blarg.to_csv(export_file)
 
 
 #Run Main script and record runtime
