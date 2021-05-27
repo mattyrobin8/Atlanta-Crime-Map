@@ -54,7 +54,7 @@ crime_query = 	"""
 							,strftime('%Y%m', rpt_date)
 				order by	strftime('%Y%m', rpt_date)
 							,zipcode
-							,crime
+							,Crime
 				"""
 
 #Join ATL crime and population dataframes
@@ -116,11 +116,14 @@ crime_2021_query = """
 				select 	year
 						,zipcode
 						,crime.Crime
-						,cast(round(total_crime * crime_index,0) as int) as total_crime
+						,cast(round(sum(total_crime) * crime_index,0) as int) as total_crime
 				from atlcrime_df crime
 				join index_2021_df ind
 				on crime.Crime = ind.Crime
 				where year = 2021
+				group by year
+						,zipcode
+						,crime.Crime
 				"""
 
 #Pull 2020 crime data
@@ -128,9 +131,12 @@ crime_2020_query = """
 				select 	year
 						,zipcode
 						,Crime
-						,total_crime
+						,sum(total_crime) as total_crime
 				from atlcrime_df
 				where year not in (2021)
+				group by year
+						,zipcode
+						,Crime
 				"""
 
 #####################
@@ -165,7 +171,7 @@ def main():
 	crime_2020_df = ps.sqldf(crime_2020_query)
 
 	#Append 2021 extrapolated to 2020 actuals
-	crime_aggregated_df = crime_2020_df.append(crime_2021_df, ignore_index=True)
+	crime_aggregated_df = crime_2020_df.append(crime_2021_df).sort_values(by=['zipcode','Crime','year'], ignore_index=True)
 	print(crime_aggregated_df)
 
 	#Export the data
