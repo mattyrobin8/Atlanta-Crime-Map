@@ -172,10 +172,11 @@ def main():
 
 	#Run ATL population query
 	atlcrimepop_df = ps.sqldf(crimepop_query)
-	print(atlcrimepop_df)
+	#print(atlcrimepop_df)
 
 	#Export the data
-	atlcrimepop_df.to_csv(export_file, index=False)
+	blarg = pd.pivot_table(data=atlcrimepop_df, index=['Crime','zipcode'], columns=['year'], values=['total_crime'])
+	blarg.to_csv(export_file)
 
 
 #Run Main script and record runtime
