@@ -57,21 +57,6 @@ crime_query = 	"""
 							,Crime
 				"""
 
-#Join ATL crime and population dataframes
-crimepop_query = """
-				select  	crime.year
-							,month
-							,year_month
-							,zipcode
-							,Crime
-							,total_crime
-							,population
-				from 		atlcrime_df crime
-				join		atlpop_df pop
-				on			crime.year = pop.year
-				order by 	year_month
-				"""
-
 #Pull denominator for extrapolation of 2021 data
 numerator_2021_query = """
 				select  	year
@@ -139,6 +124,22 @@ crime_2020_query = """
 						,Crime
 				"""
 
+#Join ATL crime and population dataframes
+crimepop_query = """
+				select  	crime.year
+							,zipcode
+							,Crime
+							,total_crime
+							,population
+							,(cast(total_crime as float) / cast(population as float)) * 100000 as crimes_per_100k
+				from 		crime_aggregated_df crime
+				join		atlpop_df pop
+				on			crime.year = pop.year
+				order by 	zipcode
+							,Crime
+							,crime.year
+				"""
+
 #####################
 ####Run functions####
 #####################
@@ -150,10 +151,6 @@ def main():
 
 	#Run ATL crime query
 	atlcrime_df = ps.sqldf(crime_query)
-
-	#Run ATL population query
-	atlcrimepop_df = ps.sqldf(crimepop_query)
-	#atlcrimepop_df['crimes_per_100K'] = (atlcrimepop_df['total_crime'] / atlcrimepop_df['population']) * 100000
 
 	#Run 2021 numerator
 	numerator_2021_df = ps.sqldf(numerator_2021_query)
@@ -171,11 +168,14 @@ def main():
 	crime_2020_df = ps.sqldf(crime_2020_query)
 
 	#Append 2021 extrapolated to 2020 actuals
-	crime_aggregated_df = crime_2020_df.append(crime_2021_df).sort_values(by=['zipcode','Crime','year'], ignore_index=True)
-	print(crime_aggregated_df)
+	crime_aggregated_df = crime_2020_df.append(crime_2021_df, ignore_index=True)
+
+	#Run ATL population query
+	atlcrimepop_df = ps.sqldf(crimepop_query)
+	print(atlcrimepop_df)
 
 	#Export the data
-	crime_aggregated_df.to_csv(export_file, index=False)
+	atlcrimepop_df.to_csv(export_file, index=False)
 
 
 #Run Main script and record runtime
