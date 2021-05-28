@@ -181,10 +181,9 @@ def main():
 
 	#Merge and do percent change
 	blarg = pd.merge(actuals_df, percent_df, how="inner", left_index=True, right_index=True, suffixes=("_actuals", "_pct_change"))
-	print(blarg)
 
 	#Export the data
-	blarg.to_csv(export_file)
+	blarg.to_csv(export_file, index=False)
 
 
 #Run Main script and record runtime
