@@ -175,15 +175,16 @@ def main():
 
 	#Transform the data for easy pct change calculation
 	actuals_df = pd.pivot_table(data=atlcrimepop_df, index=['Crime','zipcode'], columns=['year'], values=['total_crime'])
-	percent_df = actuals_df.pct_change(axis='columns')
-	print(actuals_df)
-	print(percent_df)
+	actuals_df = actuals_df.reset_index()
+	actuals_df.columns = ['crime','zipcode','total_crime_2018','total_crime_2019','total_crime_2020','total_crime_2021']
+	percent_df = actuals_df.iloc[:, 2:].pct_change(axis='columns')
 
+	#Merge and do percent change
 	blarg = pd.merge(actuals_df, percent_df, how="inner", left_index=True, right_index=True, suffixes=("_actuals", "_pct_change"))
 	print(blarg)
 
 	#Export the data
-	blarg.to_csv(export_file)
+	#blarg.to_csv(export_file)
 
 
 #Run Main script and record runtime
