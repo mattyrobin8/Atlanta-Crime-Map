@@ -184,7 +184,7 @@ def main():
 	print(blarg)
 
 	#Export the data
-	#blarg.to_csv(export_file)
+	blarg.to_csv(export_file)
 
 
 #Run Main script and record runtime
