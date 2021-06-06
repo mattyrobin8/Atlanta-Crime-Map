@@ -14,9 +14,10 @@ import time
 
 def import_data(file_location):
 	'''Read in Crime Data'''
-	df = pd.read_csv(file_location, low_memory = False)
+	df = pd.read_csv(file_location, parse_dates = ['rpt_date'], low_memory = False)
 	df[['Crime','Crime Extra']] = df.UC2_Literal.str.split("-",expand=True)
 	df['Crime'] = df['Crime'].replace(['MANSLAUGHTER'],'HOMICIDE')
+	df[['zipcode','zipcode Extra']] = df.zipcode.str.split("-",expand=True)
 	return df
 
 
@@ -169,10 +170,8 @@ def main():
 
 	#Append 2021 extrapolated to 2020 actuals
 	crime_aggregated_df = crime_2020_df.append(crime_2021_df, ignore_index=True)
-
 	#Run ATL population query
 	atlcrimepop_df = ps.sqldf(crimepop_query)
-
 	#Transform the data for easy pct change calculation
 	actuals_df = pd.pivot_table(data=atlcrimepop_df, index=['Crime','zipcode'], columns=['year'], values=['total_crime'])
 	actuals_df = actuals_df.reset_index()
