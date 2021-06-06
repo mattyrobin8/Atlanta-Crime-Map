@@ -65,7 +65,7 @@ numerator_2021_query = """
 							,sum(total_crime) as total_crime
 				from 		atlcrime_df
 				where		zipcode not in ('None')
-				and			year <= 2020
+				and			year = 2020
 				group by	year
 							,Crime
 				order by 	year
@@ -78,8 +78,8 @@ denominator_2021_query = """
 							,sum(total_crime) as total_crime
 				from 		atlcrime_df
 				where		zipcode not in ('None')
-				and			month in ('01','02','03','04')
-				and			year <= 2020
+				and			month in ('01','02','03','04','05')
+				and			year = 2020
 				group by	year
 							,Crime
 				order by 	year
@@ -130,15 +130,16 @@ crimepop_query = """
 				select  	crime.year
 							,zipcode
 							,Crime
-							,total_crime
 							,population
-							,(cast(total_crime as float) / cast(population as float)) * 100000 as crimes_per_100k
+							,sum(total_crime) as total_crime
+							,(sum(cast(total_crime as float)) / cast(population as float)) * 100000 as crimes_per_100k
 				from 		crime_aggregated_df crime
 				join		atlpop_df pop
 				on			crime.year = pop.year
-				order by 	zipcode
+				group by 	zipcode
 							,Crime
 							,crime.year
+							,population
 				"""
 
 #####################
@@ -170,10 +171,12 @@ def main():
 
 	#Append 2021 extrapolated to 2020 actuals
 	crime_aggregated_df = crime_2020_df.append(crime_2021_df, ignore_index=True)
+
 	#Run ATL population query
 	atlcrimepop_df = ps.sqldf(crimepop_query)
+
 	#Transform the data for easy pct change calculation
-	actuals_df = pd.pivot_table(data=atlcrimepop_df, index=['Crime','zipcode'], columns=['year'], values=['total_crime'])
+	actuals_df = pd.pivot_table(data=atlcrimepop_df, index=['Crime','zipcode'], columns=['year'], values=['crimes_per_100k'])
 	actuals_df = actuals_df.reset_index()
 	actuals_df.columns = ['crime','zipcode','total_crime_2018','total_crime_2019','total_crime_2020','total_crime_2021']
 	percent_df = actuals_df.iloc[:, 2:].pct_change(axis='columns')
@@ -184,6 +187,21 @@ def main():
 	#Export the data
 	blarg.to_csv(export_file, index=False)
 
+	honk = """
+					select  	crime.year
+								,crime
+								,population
+								,sum(total_crime) as total_crime
+								,(sum(cast(total_crime as float)) / cast(population as float)) * 100000 as crimes_per_100k
+					from 		crime_aggregated_df crime
+					join		atlpop_df pop
+					on			crime.year = pop.year
+					group by	crime
+								,crime.year
+					order by 	crime
+								,crime.year
+					"""
+	print(ps.sqldf(honk))
 
 #Run Main script and record runtime
 if __name__ == '__main__':
