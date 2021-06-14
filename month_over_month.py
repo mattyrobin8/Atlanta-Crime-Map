@@ -28,7 +28,7 @@ def import_data(file_location):
 
 #List files
 file_location = r"C:\Users\matty\OneDrive\Politics\Mayor Felicia\Out\crime_with_zips.csv"
-export_file = r"C:\Users\matty\OneDrive\Politics\Mayor Felicia\Out\crime_for_tableau_month.csv"
+export_file = r"C:\Users\matty\OneDrive\Politics\Mayor Felicia\Out\tableau_mvm_june.csv"
 
 #Create ATL population dataframe
 data = [['2018',459600],['2019',470500],['2020',478200],['2021',(478200-470500) + 478200]]
@@ -91,18 +91,12 @@ def main():
 	atlcrimepop_df = ps.sqldf(crimepop_query)
 
 	#Transform the data for easy pct change calculation
-	#actuals_df = pd.pivot_table(data=atlcrimepop_df, index=['Crime','zipcode'], columns=['year'], values=['total_crime'])
 	actuals_df = pd.pivot_table(data=atlcrimepop_df, index=['zipcode'], columns=['year'], values=['total_crime'])
 	actuals_df = actuals_df.reset_index()
-	#actuals_df.columns = ['crime','zipcode','total_crime_2018','total_crime_2019','total_crime_2020','total_crime_2021']
 	actuals_df.columns = ['zipcode','total_crime_2018','total_crime_2019','total_crime_2020','total_crime_2021']
-	percent_df = actuals_df.iloc[:, 2:].pct_change(axis='columns')
-
-	#Merge and do percent change
-	blarg = pd.merge(actuals_df, percent_df, how="inner", left_index=True, right_index=True, suffixes=("_actuals", "_pct_change"))
 
 	#Export the data
-	blarg.to_csv(export_file, index=False)
+	actuals_df.to_csv(export_file, index=False)
 
 	honk = """
 					select  	year
