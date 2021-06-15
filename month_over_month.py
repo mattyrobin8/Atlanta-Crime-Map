@@ -43,7 +43,7 @@ atlpop_df = pd.DataFrame(data, columns = ['year', 'population'])
 crime_query = 	"""
 				select  	strftime('%Y', rpt_date) as year
 							,strftime('%m', rpt_date) as month
-							,strftime('%Y%m', rpt_date) as year_month
+							,strftime('%d', rpt_date) as day
 							,zipcode
 							,Crime
 							,count(*) as total_crime
@@ -51,10 +51,8 @@ crime_query = 	"""
 				where		zipcode not in ('None')
 				group by 	Crime
 							,zipcode
-							,strftime('%Y', rpt_date)
-							,strftime('%m', rpt_date)
-							,strftime('%Y%m', rpt_date)
-				order by	strftime('%Y%m', rpt_date)
+							,rpt_date
+				order by	rpt_date
 							,zipcode
 							,Crime
 				"""
