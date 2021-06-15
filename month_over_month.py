@@ -68,6 +68,10 @@ crimepop_query = """
 				join		atlpop_df pop
 				on			crime.year = pop.year
                 where       month in ('01','02','03','04','05')
+				or			(
+							month in ('06') 
+							and day in ('01','02','03','04','05','06','07','08','09','10')
+							)
 				group by 	zipcode
 							,crime.year
 							,population
@@ -98,9 +102,7 @@ def main():
 
 	honk = """
 					select  	year
-								,population
 								,sum(total_crime) as total_crime
-								,(sum(cast(total_crime as float)) / cast(population as float)) * 100000 as crimes_per_100k
 					from 		atlcrimepop_df
 					group by	year
 					order by 	year
